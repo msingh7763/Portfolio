@@ -1,7 +1,8 @@
 const rawApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim();
 const rawDevApiUrl = (import.meta.env.VITE_DEV_API_URL || '').trim();
+const productionFallbackApiUrl = 'https://portfolio-5tua.onrender.com';
 
-const resolvedApiBaseUrl = rawApiBaseUrl || (import.meta.env.DEV ? rawDevApiUrl : '');
+const resolvedApiBaseUrl = rawApiBaseUrl || (import.meta.env.DEV ? rawDevApiUrl : productionFallbackApiUrl);
 
 export const API_BASE_URL = resolvedApiBaseUrl.replace(/\/$/, '');
 
