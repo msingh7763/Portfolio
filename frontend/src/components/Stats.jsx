@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
-  { value: '200+', label: 'Problems Solved' },
-  { value: '2+', label: 'Projects Completed' },
+  { value: '450+', label: 'Problems Solved' },
+  { value: '3+', label: 'Major Projects' },
   { value: 'MERN', label: 'Stack Developer' },
 ];
 
