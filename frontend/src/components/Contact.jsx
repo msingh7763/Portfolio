@@ -30,13 +30,33 @@ export default function Contact() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          // Backward compatibility: some deployed backends still require an email field.
+          email: 'no-reply@example.com',
+        }),
       });
 
-      const payload = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      const rawBody = await response.text();
+      let payload = null;
+
+      if (rawBody && contentType.includes('application/json')) {
+        try {
+          payload = JSON.parse(rawBody);
+        } catch {
+          payload = null;
+        }
+      }
 
       if (!response.ok) {
-        throw new Error(payload.error || 'Request failed');
+        const serverMessage = payload?.error || payload?.message || rawBody?.trim();
+
+        if (!serverMessage || serverMessage.startsWith('<')) {
+          throw new Error('Server returned an unexpected response. Please verify API deployment and VITE_API_BASE_URL.');
+        }
+
+        throw new Error(serverMessage);
       }
 
       setStatus('Message sent successfully!');
