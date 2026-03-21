@@ -6,7 +6,7 @@ import { buildApiUrl } from '../config/api';
 const CONTACT_ENDPOINT = buildApiUrl('/api/contact');
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isError = status.toLowerCase().startsWith('failed');
@@ -16,7 +16,7 @@ export default function Contact() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.message) {
+    if (!form.name || !form.email || !form.message) {
       setStatus('Please fill all fields.');
       return;
     }
@@ -30,11 +30,7 @@ export default function Contact() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...form,
-          // Backward compatibility: some deployed backends still require an email field.
-          email: 'no-reply@example.com',
-        }),
+        body: JSON.stringify(form),
       });
 
       const contentType = response.headers.get('content-type') || '';
@@ -60,7 +56,7 @@ export default function Contact() {
       }
 
       setStatus('Message sent successfully!');
-      setForm({ name: '', message: '' });
+      setForm({ name: '', email: '', message: '' });
     } catch (error) {
       console.error(error);
       const reason = error?.message || 'Unknown error';
@@ -143,6 +139,25 @@ export default function Contact() {
               onChange={onChange}
               name="name"
               placeholder="Enter your full name"
+              className="w-full px-10 py-3 transition bg-white border outline-none rounded-xl border-slate-300/90 text-slate-900 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-cyan-400 dark:focus:ring-cyan-900/40"
+              required
+            />
+          </div>
+
+          <label htmlFor="contact-email" className="block mt-5 mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+            Your Email
+          </label>
+          <div className="relative">
+            <span className="absolute -translate-y-1/2 pointer-events-none left-3 top-1/2 text-slate-400 dark:text-slate-500">
+              <FiMail size={18} />
+            </span>
+            <input
+              id="contact-email"
+              value={form.email}
+              onChange={onChange}
+              name="email"
+              type="email"
+              placeholder="Enter your email address"
               className="w-full px-10 py-3 transition bg-white border outline-none rounded-xl border-slate-300/90 text-slate-900 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-cyan-400 dark:focus:ring-cyan-900/40"
               required
             />
