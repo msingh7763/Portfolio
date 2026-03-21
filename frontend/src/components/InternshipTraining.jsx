@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 import {
   FaReact,
   FaNodeJs,
@@ -7,6 +8,7 @@ import {
   FaCloud,
   FaMicrosoft,
 } from "react-icons/fa";
+import { FiMaximize2, FiX } from "react-icons/fi";
 import { SiTailwindcss, SiMongodb, SiExpress, SiTensorflow } from "react-icons/si";
 import internshipImage from "./intenship.png";
 import trainingImage from "./training.png";
@@ -57,7 +59,7 @@ const experiences = [
   },
 ];
 
-function ExperienceCard({ item, idx }) {
+function ExperienceCard({ item, idx, onImageClick }) {
   return (
     <motion.article
       key={item.title}
@@ -69,12 +71,24 @@ function ExperienceCard({ item, idx }) {
       style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
       className="group overflow-hidden rounded-2xl border border-slate-700 bg-slate-900/80 shadow-xl transition duration-500 hover:shadow-[0_0_40px_rgba(249,115,22,0.4)]"
     >
-      <div className="w-full h-48 overflow-hidden">
+      <div 
+        onClick={() => onImageClick(item)}
+        className="relative w-full h-48 overflow-hidden cursor-pointer group/image"
+      >
         <img
           src={item.image}
           alt={item.title}
           className="object-cover w-full h-full transition duration-700 group-hover:scale-110"
         />
+        <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/40 transition-colors duration-300 flex items-center justify-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            whileHover={{ scale: 1 }}
+            className="text-white text-2xl"
+          >
+            <FiMaximize2 />
+          </motion.div>
+        </div>
       </div>
 
       <div className="p-6">
@@ -120,6 +134,7 @@ function ExperienceCard({ item, idx }) {
 }
 
 export default function InternshipTraining() {
+  const [selectedItem, setSelectedItem] = useState(null);
   const internships = experiences.filter((item) => item.type === "internship");
   const trainings = experiences.filter((item) => item.type === "training");
 
@@ -153,7 +168,7 @@ export default function InternshipTraining() {
           }`}
         >
           {internships.map((item, idx) => (
-            <ExperienceCard key={item.title} item={item} idx={idx} />
+            <ExperienceCard key={item.title} item={item} idx={idx} onImageClick={setSelectedItem} />
           ))}
         </div>
       </div>
@@ -166,10 +181,99 @@ export default function InternshipTraining() {
           }`}
         >
           {trainings.map((item, idx) => (
-            <ExperienceCard key={item.title} item={item} idx={idx} />
+            <ExperienceCard key={item.title} item={item} idx={idx} onImageClick={setSelectedItem} />
           ))}
         </div>
       </div>
+
+      {/* Experience Modal */}
+      <AnimatePresence>
+        {selectedItem && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedItem(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-h-[90vh] max-w-4xl w-full rounded-2xl bg-white dark:bg-slate-900 overflow-hidden shadow-2xl"
+            >
+              <button
+                onClick={() => setSelectedItem(null)}
+                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 transition flex items-center justify-center"
+              >
+                <FiX size={24} className="text-slate-900 dark:text-white" />
+              </button>
+
+              <div className="flex flex-col sm:flex-row h-full">
+                <div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-800 p-4 sm:p-8 overflow-auto">
+                  <img
+                    src={selectedItem.image}
+                    alt={selectedItem.title}
+                    className="max-h-[70vh] w-auto object-contain"
+                  />
+                </div>
+                <div className="w-full sm:w-96 p-6 flex flex-col justify-between overflow-y-auto">
+                  <div>
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                      {selectedItem.title}
+                    </h3>
+                    <p className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+                      {selectedItem.company}
+                    </p>
+                    <p className="text-xs font-semibold text-orange-500 mb-4">
+                      {selectedItem.period}
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
+                      {selectedItem.description}
+                    </p>
+                    
+                    {selectedItem.details?.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="text-sm font-semibold text-slate-900 dark:text-white mb-2">
+                          Key Highlights
+                        </h4>
+                        <ul className="space-y-1">
+                          {selectedItem.details.map((detail) => (
+                            <li key={detail} className="text-xs text-slate-600 dark:text-slate-300 flex items-start gap-2">
+                              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-orange-400 flex-shrink-0" />
+                              <span>{detail}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {selectedItem.technologies?.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-slate-900 dark:text-white mb-2">
+                          Technologies
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedItem.technologies.map((tech) => (
+                            <span
+                              key={tech.name}
+                              className="inline-flex items-center px-2 py-1 text-xs font-medium border rounded-full border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+                            >
+                              {tech.icon}
+                              {tech.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

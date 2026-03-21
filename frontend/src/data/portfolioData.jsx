@@ -1,4 +1,7 @@
 import infineonAwardImage from "../components/img2.jpeg";
+import gfgCertificate from "../components/gfg.png";
+import cloudCertificate from "../components/cloud.png";
+import generativeAiCertificate from "../components/generativeAi.png";
 import certificateImg3 from "../components/img3.png";
 import certificateImg4 from "../components/img4.png";
 import certificateImg5 from "../components/img5.png";
@@ -139,6 +142,7 @@ export const certifications = [
   {
     title: "React – GeeksforGeeks",
     issuer: "GeeksforGeeks",
+    image: gfgCertificate,
     points: [
       "Developed modern UI components using hooks and context",
       "Completed 8 hands-on projects (SPA, dashboard)",
@@ -146,17 +150,9 @@ export const certifications = [
     ],
   },
   {
-    title: "MERN Stack – CipherSchools",
-    issuer: "CipherSchools",
-    points: [
-      "Built full MERN authentication flow (JWT/BCrypt)",
-      "Integrated REST APIs and CRUD interfaces",
-      "Deployed app and tested CI/CD workflow",
-    ],
-  },
-  {
     title: "Cloud Computing – NPTEL",
     issuer: "NPTEL",
+    image: cloudCertificate,
     points: [
       "Learned AWS fundamentals (EC2, S3)",
       "Implemented serverless functions and storage",
@@ -164,12 +160,13 @@ export const certifications = [
     ],
   },
   {
-    title: "Generative AI – Microsoft",
-    issuer: "Microsoft",
+    title: "Generative AI – Microsoft & LinkedIn",
+    issuer: "Microsoft & LinkedIn",
+    image: generativeAiCertificate,
     points: [
-      "Explored OpenAI APIs and prompt optimization",
-      "Built chat assistant prototype",
-      "Learned AI ethics and deployment practices",
+      "Explored generative AI models and prompt engineering techniques",
+      "Built applications using OpenAI APIs and LLMs",
+      "Learned AI ethics, responsible AI practices, and deployment strategies",
     ],
   },
   {
