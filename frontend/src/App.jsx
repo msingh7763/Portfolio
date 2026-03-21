@@ -34,7 +34,7 @@ function App() {
   return (
     <BrowserRouter>
       
-      <div className="relative min-h-screen">
+      <div className="relative min-h-screen overflow-x-hidden">
 
         {/* BACKGROUND (GLOBAL) */}
         <BackgroundAnimation />

@@ -22,7 +22,7 @@ export default function About() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="p-8 mb-12 border rounded-2xl border-slate-200/30 dark:border-slate-700/30 bg-gradient-to-br from-slate-900/50 via-slate-800/30 to-transparent backdrop-blur-xl"
+        className="mb-12 rounded-2xl border border-slate-200/30 bg-gradient-to-br from-slate-900/50 via-slate-800/30 to-transparent p-5 backdrop-blur-xl dark:border-slate-700/30 sm:p-8"
       >
         <p className="text-lg leading-relaxed text-slate-100 dark:text-slate-200">
           Enthusiastic and detail-oriented B.Tech student with a strong foundation in full-stack web development and data structures & algorithms. Proficient in building scalable applications using the MERN stack (MongoDB, Express.js, React.js, Node.js). Experienced in developing real-world projects such as a Job Application Tracker with authentication and CRUD functionalities. Passionate about problem-solving, clean code practices, and continuously learning modern technologies to build impactful software solutions.
@@ -48,7 +48,7 @@ export default function About() {
             <img
               src={profileImg}
               alt="Muskan Kumari"
-              className="object-cover w-full transition duration-500 h-96 rounded-2xl group-hover:scale-105"
+              className="h-72 w-full rounded-2xl object-cover transition duration-500 group-hover:scale-105 sm:h-96"
             />
           </div>
         </motion.div>

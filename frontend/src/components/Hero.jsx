@@ -7,17 +7,17 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative w-full min-h-screen overflow-hidden text-white"
+      className="relative w-full pt-6 pb-10 overflow-hidden text-white sm:pb-14 sm:pt-10"
     >
-      <div className="relative z-10 flex items-center max-w-screen-xl min-h-screen px-6 mx-auto lg:px-12">
-        <div className="grid items-center w-full grid-cols-1 gap-12 lg:grid-cols-2">
+      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] max-w-screen-xl items-center px-4 sm:px-6 lg:px-12">
+        <div className="grid items-center w-full grid-cols-1 gap-10 sm:gap-12 lg:grid-cols-2">
 
           {/* LEFT CONTENT */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-6"
+            className="space-y-6 text-center lg:text-left"
           >
 
             <p className="text-sm font-semibold tracking-wider text-orange-400 uppercase">
@@ -25,7 +25,7 @@ export default function Hero() {
             </p>
 
            <motion.h1
-  className="relative text-5xl font-extrabold leading-tight sm:text-6xl"
+  className="relative text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl"
 
   initial="hidden"
   animate="visible"
@@ -58,7 +58,7 @@ export default function Hero() {
               Full Stack Developer | MERN Stack Developer
             </p>
 
-            <p className="max-w-xl text-slate-300">
+            <p className="max-w-xl mx-auto text-sm text-slate-300 sm:text-base lg:mx-0">
               Computer Science student at Lovely Professional University
               focusing on scalable MERN web apps, clean architecture, and
               high-performance user experiences.
@@ -71,7 +71,7 @@ export default function Hero() {
                 href="/muskankri.pdf"
                 download="muskankri.pdf"
                 whileHover={{ scale: 1.05 }}
-                className="px-6 py-3 font-semibold text-white border rounded-xl border-white/30 hover:bg-white/10"
+                className="w-full px-6 py-3 font-semibold text-center text-white border rounded-xl border-white/30 hover:bg-white/10 sm:w-auto"
               >
                 Download CV
               </motion.a>
@@ -88,13 +88,13 @@ export default function Hero() {
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="flex justify-center lg:justify-end"
+            className="flex justify-center order-first lg:order-none lg:justify-end"
           >
 
             <motion.div
               animate={{ y: [0, -12, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="relative flex items-center justify-center w-80 h-80"
+              className="relative flex items-center justify-center h-60 w-60 sm:h-72 sm:w-72 lg:h-80 lg:w-80"
             >
 
               {/* Soft glow (same style as before but cleaner) */}
@@ -103,7 +103,7 @@ export default function Hero() {
               <img
                 src={profileImg}
                 alt="Muskan profile"
-                className="relative object-cover border-4 rounded-full w-72 h-72 border-orange-400/40"
+                className="relative object-cover border-4 rounded-full h-52 w-52 border-orange-400/40 sm:h-64 sm:w-64 lg:h-72 lg:w-72"
               />
 
               {/* subtle ring (same as your old design) */}

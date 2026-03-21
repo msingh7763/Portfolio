@@ -108,11 +108,11 @@ export default function Skills() {
 
   return (
 
-    <section className="relative w-full min-h-screen px-8 py-20 overflow-hidden">
+    <section className="relative w-full min-h-screen overflow-hidden px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
 
       {/* TITLE */}
 
-      <h2 className="mb-10 text-4xl font-bold text-center text-stone-100">
+      <h2 className="mb-8 text-center text-3xl font-bold text-stone-100 sm:mb-10 sm:text-4xl">
         Skills
       </h2>
 
@@ -120,7 +120,7 @@ export default function Skills() {
       {/* CATEGORY BUTTONS */}
 
       <div
-        className="flex flex-wrap justify-center gap-8 mt-10"
+        className="mt-8 flex flex-wrap justify-center gap-3 sm:gap-4 lg:gap-8"
         style={{ perspective: "1000px" }}
       >
 
@@ -158,7 +158,7 @@ export default function Skills() {
                 stiffness: 200
               }}
 
-              className={`flex items-center gap-3 px-10 py-5 text-lg font-semibold rounded-2xl
+              className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold sm:gap-3 sm:px-6 sm:py-4 sm:text-base lg:px-10 lg:py-5 lg:text-lg
               ${
                 isActive
                   ? "bg-orange-500 text-white shadow-lg shadow-orange-500/40"
@@ -187,7 +187,7 @@ export default function Skills() {
 
       {/* QUICK VIEW (STRAIGHT LINE) */}
 
-      <div className="mt-14 pb-3">
+      <div className="mt-10 hidden pb-3 md:block lg:mt-14">
         <div className="mx-auto flex w-fit max-w-full items-center justify-center overflow-x-auto rounded-3xl border border-orange-300/35 bg-gradient-to-r from-slate-950/95 via-slate-900/90 to-slate-950/95 px-7 py-5 shadow-[0_0_34px_rgba(249,115,22,0.22)] backdrop-blur-md">
           <div className="flex min-w-max items-center justify-center gap-5">
           {activeSkills.items.map((skill) => (
@@ -209,7 +209,20 @@ export default function Skills() {
         </div>
       </div>
 
-      <div className="relative w-full h-[75vh] mt-3">
+      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:mt-10 lg:hidden">
+        {activeSkills.items.map((skill) => (
+          <div
+            key={`mobile-${skill}`}
+            className="rounded-2xl border border-orange-300/30 bg-slate-900/85 p-4 text-center shadow-lg"
+          >
+            <div className="mb-2 text-3xl text-orange-300">{iconMap[skill]}</div>
+            <p className="text-sm font-semibold text-orange-100">{skill}</p>
+            <p className="mt-1 text-xs font-semibold text-orange-200/90">{skillPercentMap[skill] ?? 80}%</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="relative mt-3 hidden h-[75vh] w-full lg:block">
 
         {activeSkills.items.map((skill, index) => {
 
