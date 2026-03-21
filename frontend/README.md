@@ -1,16 +1,34 @@
-# React + Vite
+# Portfolio Frontend (Vite + React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Local Development
 
-Currently, two official plugins are available:
+1. Install dependencies:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+   npm install
 
-## React Compiler
+2. Create a local env file from the example and adjust values if needed:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+   copy .env.example .env
 
-## Expanding the ESLint configuration
+3. Run the app:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+   npm run dev
+
+By default, local API calls use `/api/*` and Vite proxies them to `VITE_DEV_API_URL`.
+
+## Deploy on Vercel
+
+1. Import this `frontend` folder into Vercel.
+2. Keep framework preset as `Vite`.
+3. Add environment variable:
+   - `VITE_API_BASE_URL` = `https://portfolio-5tua.onrender.com`
+
+4. Deploy.
+
+## Backend CORS Setting (Render)
+
+In Render backend environment variables, set:
+
+- `CLIENT_URLS=http://localhost:5173,https://your-frontend.vercel.app`
+
+Replace `https://your-frontend.vercel.app` with your real Vercel production URL.

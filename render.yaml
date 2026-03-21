@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: portfolio-api
+    env: node
+    rootDir: Backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: MONGO_URI
+        sync: false
+      - key: MAIL_USER
+        sync: false
+      - key: MAIL_APP_PASSWORD
+        sync: false
+      - key: CLIENT_URLS
+        value: https://your-frontend.onrender.com
+
+  - type: static
+    name: portfolio-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: VITE_EMAILJS_SERVICE_ID
+        sync: false
+      - key: VITE_EMAILJS_TEMPLATE_ID
+        sync: false
+      - key: VITE_EMAILJS_PUBLIC_KEY
+        sync: false
+      - key: VITE_RECEIVER_EMAIL
+        sync: false

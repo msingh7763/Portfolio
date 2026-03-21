@@ -1,33 +1,22 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import emailjs from '@emailjs/browser';
 import { FiMail, FiSend, FiUser } from 'react-icons/fi';
+import { buildApiUrl } from '../config/api';
 
-const EMAILJS_SERVICE_ID = (import.meta.env.VITE_EMAILJS_SERVICE_ID || '').trim().replace(/^['"]|['"]$/g, '');
-const EMAILJS_TEMPLATE_ID = (import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '').trim().replace(/^['"]|['"]$/g, '');
-const EMAILJS_PUBLIC_KEY = (import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '').trim().replace(/^['"]|['"]$/g, '');
-const DEFAULT_CONTACT_EMAIL = import.meta.env.VITE_RECEIVER_EMAIL || 'msingh7763@gmail.com';
-const PLACEHOLDER_VALUES = new Set([
-  'service_xxxxxxx',
-  'template_xxxxxxx',
-  'xxxxxxxxxxxxxxxx',
-  'service_abcd123',
-  'template_xyz789',
-  'QwErTy123456',
-]);
+const CONTACT_ENDPOINT = buildApiUrl('/api/contact');
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isError = status.toLowerCase().startsWith('failed') || status.toLowerCase().includes('not configured');
+  const isError = status.toLowerCase().startsWith('failed');
 
   const onChange = (e) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.message) {
+    if (!form.name || !form.email || !form.message) {
       setStatus('Please fill all fields.');
       return;
     }
@@ -36,39 +25,25 @@ export default function Contact() {
       setIsSubmitting(true);
       setStatus('');
 
-      if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-        setStatus('EmailJS is not configured. Add VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID, and VITE_EMAILJS_PUBLIC_KEY in frontend .env.');
-        return;
-      }
-
-      if (
-        PLACEHOLDER_VALUES.has(EMAILJS_SERVICE_ID) ||
-        PLACEHOLDER_VALUES.has(EMAILJS_TEMPLATE_ID) ||
-        PLACEHOLDER_VALUES.has(EMAILJS_PUBLIC_KEY)
-      ) {
-        setStatus('EmailJS keys are placeholders. Replace them with real values from EmailJS dashboard and restart frontend.');
-        return;
-      }
-
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          from_name: form.name,
-          from_email: DEFAULT_CONTACT_EMAIL,
-          message: form.message,
-          to_email: DEFAULT_CONTACT_EMAIL,
+      const response = await fetch(CONTACT_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        {
-          publicKey: EMAILJS_PUBLIC_KEY,
-        }
-      );
+        body: JSON.stringify(form),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error || 'Request failed');
+      }
 
       setStatus('Message sent successfully!');
-      setForm({ name: '', message: '' });
+      setForm({ name: '', email: '', message: '' });
     } catch (error) {
       console.error(error);
-      const reason = error?.text || error?.message || 'Unknown EmailJS error';
+      const reason = error?.message || 'Unknown error';
       setStatus(`Failed to send message: ${reason}`);
     } finally {
       setIsSubmitting(false);
@@ -152,6 +127,20 @@ export default function Contact() {
               required
             />
           </div>
+
+          <label htmlFor="contact-email" className="mb-2 mt-5 block text-sm font-semibold text-slate-700 dark:text-slate-200">
+            Your Email
+          </label>
+          <input
+            id="contact-email"
+            type="email"
+            value={form.email}
+            onChange={onChange}
+            name="email"
+            placeholder="Enter your email address"
+            className="w-full rounded-xl border border-slate-300/90 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-cyan-400 dark:focus:ring-cyan-900/40"
+            required
+          />
 
           <label htmlFor="contact-message" className="mb-2 mt-5 block text-sm font-semibold text-slate-700 dark:text-slate-200">
             Message
