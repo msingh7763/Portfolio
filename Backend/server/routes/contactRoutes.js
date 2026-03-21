@@ -22,10 +22,10 @@ const createTransporter = () => {
 
 router.post('/', async (req, res) => {
   try {
-    const { name, email, message } = req.body;
+    const { name, message } = req.body;
 
-    if (!name || !email || !message) {
-      return res.status(400).json({ error: 'Please provide name, email, and message.' });
+    if (!name || !message) {
+      return res.status(400).json({ error: 'Please provide name and message.' });
     }
 
     const transporter = createTransporter();
@@ -38,19 +38,17 @@ router.post('/', async (req, res) => {
     await transporter.sendMail({
       from: `Portfolio Contact <${process.env.MAIL_USER}>`,
       to: CONTACT_RECEIVER_EMAIL,
-      replyTo: email,
       subject: `New Portfolio Contact from ${name}`,
-      text: `You received a new contact form message.\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+      text: `You received a new contact form message.\n\nName: ${name}\n\nMessage:\n${message}`,
       html: `
         <h2>New Portfolio Contact Message</h2>
         <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
         <p><strong>Message:</strong></p>
         <p>${message.replace(/\n/g, '<br/>')}</p>
       `,
     });
 
-    const contact = new Contact({ name, email, message });
+    const contact = new Contact({ name, message });
     await contact.save();
 
     return res.status(201).json({ message: 'Message sent successfully.' });

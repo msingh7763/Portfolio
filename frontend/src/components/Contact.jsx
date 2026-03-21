@@ -6,7 +6,7 @@ import { buildApiUrl } from '../config/api';
 const CONTACT_ENDPOINT = buildApiUrl('/api/contact');
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [form, setForm] = useState({ name: '', message: '' });
   const [status, setStatus] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isError = status.toLowerCase().startsWith('failed');
@@ -16,7 +16,7 @@ export default function Contact() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.email || !form.message) {
+    if (!form.name || !form.message) {
       setStatus('Please fill all fields.');
       return;
     }
@@ -40,7 +40,7 @@ export default function Contact() {
       }
 
       setStatus('Message sent successfully!');
-      setForm({ name: '', email: '', message: '' });
+      setForm({ name: '', message: '' });
     } catch (error) {
       console.error(error);
       const reason = error?.message || 'Unknown error';
@@ -127,20 +127,6 @@ export default function Contact() {
               required
             />
           </div>
-
-          <label htmlFor="contact-email" className="block mt-5 mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-            Email Address
-          </label>
-          <input
-            id="contact-email"
-            type="email"
-            value={form.email}
-            onChange={onChange}
-            name="email"
-            placeholder="Enter email address"
-            className="w-full px-4 py-3 transition bg-white border outline-none rounded-xl border-slate-300/90 text-slate-900 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-cyan-400 dark:focus:ring-cyan-900/40"
-            required
-          />
 
           <label htmlFor="contact-message" className="block mt-5 mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
             Message
