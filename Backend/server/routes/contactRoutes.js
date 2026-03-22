@@ -4,7 +4,7 @@ import Contact from '../models/Contact.js';
 
 const router = express.Router();
 
-const CONTACT_RECEIVER_EMAIL = 'msingh7763@gmail.com';
+const CONTACT_RECEIVER_EMAIL = process.env.CONTACT_RECEIVER_EMAIL || 'msingh7763@gmail.com';
 const getMailPassword = () => process.env.MAIL_APP_PASSWORD || process.env.MAIL_PASSWORD || '';
 
 const getMailConfig = () => {
@@ -40,6 +40,30 @@ const createTransporter = () => {
   });
 };
 
+const sendNotificationEmail = async ({ name, email, message }) => {
+  const transporter = createTransporter();
+
+  if (!transporter) {
+    console.warn('⚠️ Mail service not configured. Contact saved without email notification.');
+    return;
+  }
+
+  await transporter.sendMail({
+    from: `Portfolio Contact <${process.env.MAIL_USER}>`,
+    to: CONTACT_RECEIVER_EMAIL,
+    replyTo: email,
+    subject: `New Portfolio Contact from ${name}`,
+    text: `You received a new contact form message.\n\nName: ${name}\n\nEmail: ${email}\n\nMessage:\n${message}`,
+    html: `
+      <h2>New Portfolio Contact Message</h2>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+      <p><strong>Message:</strong></p>
+      <p>${message.replace(/\n/g, '<br/>')}</p>
+    `,
+  });
+};
+
 router.post('/', async (req, res) => {
   try {
     const { name, email, message } = req.body;
@@ -54,57 +78,24 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Please provide a valid email address.' });
     }
 
-    const transporter = createTransporter();
-    if (!transporter) {
-      console.error('❌ Mail service not configured. Missing MAIL_USER and/or MAIL_APP_PASSWORD (or MAIL_PASSWORD)');
-      return res.status(500).json({
-        error: 'Mail service is not configured. Please set MAIL_USER and MAIL_APP_PASSWORD (or MAIL_PASSWORD) in environment variables.',
-      });
-    }
-
-    // Validate SMTP connectivity first so timeouts/auth issues are surfaced clearly.
-    await transporter.verify();
-
-    // ✅ Send email to portfolio owner
-    await transporter.sendMail({
-      from: `Portfolio Contact <${process.env.MAIL_USER}>`,
-      to: CONTACT_RECEIVER_EMAIL,
-      replyTo: email,
-      subject: `New Portfolio Contact from ${name}`,
-      text: `You received a new contact form message.\n\nName: ${name}\n\nEmail: ${email}\n\nMessage:\n${message}`,
-      html: `
-        <h2>New Portfolio Contact Message</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-        <p><strong>Message:</strong></p>
-        <p>${message.replace(/\n/g, '<br/>')}</p>
-      `,
-    });
-
-    // ✅ Save to database
+    // ✅ Save to database first so user submission does not fail when SMTP is slow.
     const contact = new Contact({ name, email, message });
     await contact.save();
 
-    return res.status(201).json({ message: 'Message sent successfully.' });
+    // Send notification in background; do not block API response.
+    sendNotificationEmail({ name, email, message }).catch((mailError) => {
+      const code = mailError?.code || '';
+      const mailMessage = mailError?.message || 'Unknown mail error';
+      console.error('⚠️ Background mail failed:', mailMessage, code ? `(code: ${code})` : '');
+    });
+
+    return res.status(201).json({ message: 'Message received successfully.' });
   } catch (error) {
-    const code = error?.code || '';
     const message = error?.message || 'Unknown error';
 
-    console.error('❌ Contact route error:', message, code ? `(code: ${code})` : '');
+    console.error('❌ Contact route error:', message);
 
-    if (message.toLowerCase().includes('connection timeout') || code === 'ETIMEDOUT') {
-      return res.status(504).json({
-        error: 'Mail server connection timed out. Check MAIL_HOST/MAIL_PORT and verify outbound SMTP access from deployment.',
-      });
-    }
-
-    if (code === 'EAUTH') {
-      return res.status(401).json({
-        error: 'Mail authentication failed. Verify MAIL_USER and MAIL_APP_PASSWORD (or MAIL_PASSWORD).',
-      });
-    }
-
-    return res.status(500).json({ error: `Failed to send message: ${message}` });
+    return res.status(500).json({ error: 'Failed to submit contact form. Please try again.' });
   }
 });
 
