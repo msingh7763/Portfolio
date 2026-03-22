@@ -7,6 +7,21 @@ const router = express.Router();
 const CONTACT_RECEIVER_EMAIL = 'msingh7763@gmail.com';
 const getMailPassword = () => process.env.MAIL_APP_PASSWORD || process.env.MAIL_PASSWORD || '';
 
+const getMailConfig = () => {
+  const host = process.env.MAIL_HOST || 'smtp.gmail.com';
+  const port = Number(process.env.MAIL_PORT || 465);
+  const secure = process.env.MAIL_SECURE ? process.env.MAIL_SECURE === 'true' : port === 465;
+
+  return {
+    host,
+    port,
+    secure,
+    connectionTimeout: Number(process.env.MAIL_CONNECTION_TIMEOUT || 15000),
+    greetingTimeout: Number(process.env.MAIL_GREETING_TIMEOUT || 10000),
+    socketTimeout: Number(process.env.MAIL_SOCKET_TIMEOUT || 20000),
+  };
+};
+
 const createTransporter = () => {
   const mailPassword = getMailPassword();
 
@@ -14,8 +29,10 @@ const createTransporter = () => {
     return null;
   }
 
+  const mailConfig = getMailConfig();
+
   return nodemailer.createTransport({
-    service: 'gmail',
+    ...mailConfig,
     auth: {
       user: process.env.MAIL_USER,
       pass: mailPassword,
@@ -45,6 +62,9 @@ router.post('/', async (req, res) => {
       });
     }
 
+    // Validate SMTP connectivity first so timeouts/auth issues are surfaced clearly.
+    await transporter.verify();
+
     // ✅ Send email to portfolio owner
     await transporter.sendMail({
       from: `Portfolio Contact <${process.env.MAIL_USER}>`,
@@ -67,8 +87,24 @@ router.post('/', async (req, res) => {
 
     return res.status(201).json({ message: 'Message sent successfully.' });
   } catch (error) {
-    console.error('❌ Contact route error:', error.message);
-    return res.status(500).json({ error: `Failed to send message: ${error.message}` });
+    const code = error?.code || '';
+    const message = error?.message || 'Unknown error';
+
+    console.error('❌ Contact route error:', message, code ? `(code: ${code})` : '');
+
+    if (message.toLowerCase().includes('connection timeout') || code === 'ETIMEDOUT') {
+      return res.status(504).json({
+        error: 'Mail server connection timed out. Check MAIL_HOST/MAIL_PORT and verify outbound SMTP access from deployment.',
+      });
+    }
+
+    if (code === 'EAUTH') {
+      return res.status(401).json({
+        error: 'Mail authentication failed. Verify MAIL_USER and MAIL_APP_PASSWORD (or MAIL_PASSWORD).',
+      });
+    }
+
+    return res.status(500).json({ error: `Failed to send message: ${message}` });
   }
 });
 
