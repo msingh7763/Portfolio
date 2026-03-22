@@ -15,7 +15,7 @@ services:
       - key: MAIL_APP_PASSWORD
         sync: false
       - key: CLIENT_URLS
-        value: https://your-frontend.onrender.com
+        sync: false
 
   - type: static
     name: portfolio-frontend

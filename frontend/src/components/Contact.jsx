@@ -1,9 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { FiMail, FiSend, FiUser } from 'react-icons/fi';
-import { API_BASE_URL, buildApiUrl } from '../config/api';
-
-const CONTACT_ENDPOINT = buildApiUrl('/api/contact');
+import { buildApiCandidates } from '../config/api';
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
@@ -21,50 +19,66 @@ export default function Contact() {
       return;
     }
 
-    if (import.meta.env.PROD && !API_BASE_URL) {
-      setStatus('Failed to send message: missing VITE_API_BASE_URL in frontend environment settings.');
-      return;
-    }
-
     try {
       setIsSubmitting(true);
       setStatus('');
 
-      const response = await fetch(CONTACT_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      });
+      const endpoints = buildApiCandidates('/api/contact');
+      let lastError = null;
 
-      const contentType = response.headers.get('content-type') || '';
-      const rawBody = await response.text();
-      let payload = null;
-
-      if (rawBody && contentType.includes('application/json')) {
+      for (const endpoint of endpoints) {
         try {
-          payload = JSON.parse(rawBody);
-        } catch {
-          payload = null;
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(form),
+          });
+
+          const contentType = response.headers.get('content-type') || '';
+          const rawBody = await response.text();
+          let payload = null;
+
+          if (rawBody && contentType.includes('application/json')) {
+            try {
+              payload = JSON.parse(rawBody);
+            } catch {
+              payload = null;
+            }
+          }
+
+          if (response.ok) {
+            setStatus('Message sent successfully!');
+            setForm({ name: '', email: '', message: '' });
+            return;
+          }
+
+          const serverMessage = payload?.error || payload?.message || rawBody?.trim();
+          const isRetriable = response.status === 404 || !serverMessage || serverMessage.startsWith('<');
+
+          if (isRetriable) {
+            lastError = new Error('Server returned an unexpected response. Please verify API deployment and VITE_API_BASE_URL.');
+            continue;
+          }
+
+          throw new Error(serverMessage);
+        } catch (error) {
+          lastError = error;
         }
       }
 
-      if (!response.ok) {
-        const serverMessage = payload?.error || payload?.message || rawBody?.trim();
-
-        if (!serverMessage || serverMessage.startsWith('<')) {
-          throw new Error('Server returned an unexpected response. Please verify API deployment and VITE_API_BASE_URL.');
-        }
-
-        throw new Error(serverMessage);
-      }
-
-      setStatus('Message sent successfully!');
-      setForm({ name: '', email: '', message: '' });
+      throw lastError || new Error('Unable to reach contact API endpoint.');
     } catch (error) {
       console.error(error);
       const reason = error?.message || 'Unknown error';
+      const normalized = String(reason).toLowerCase();
+
+      if (normalized.includes('failed to fetch') || normalized.includes('networkerror')) {
+        setStatus('Failed to send message: network/CORS issue. Verify backend URL, deployment status, and CLIENT_URLS allowlist.');
+        return;
+      }
+
       setStatus(`Failed to send message: ${reason}`);
     } finally {
       setIsSubmitting(false);

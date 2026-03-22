@@ -14,7 +14,10 @@ const MONGO_URI = process.env.MONGO_URI;
 const CLIENT_URLS = (process.env.CLIENT_URLS || '')
   .split(',')
   .map((url) => url.trim())
-  .filter(Boolean);
+  .filter(Boolean)
+  .filter((url) => !url.includes('your-frontend'));
+
+const ALLOW_ALL_ORIGINS = CLIENT_URLS.length === 0;
 
 // ✅ Middleware
 app.use(express.json({ limit: '1mb' }));
@@ -22,7 +25,7 @@ app.use(express.json({ limit: '1mb' }));
 // ✅ CORS (allow configured client origins; fallback to allow-all if not configured)
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || CLIENT_URLS.length === 0 || CLIENT_URLS.includes(origin)) {
+    if (!origin || ALLOW_ALL_ORIGINS || CLIENT_URLS.includes(origin)) {
       callback(null, true);
       return;
     }
@@ -31,6 +34,7 @@ app.use(cors({
   },
   credentials: true,
 }));
+app.options('*', cors());
 
 // ✅ Routes
 app.use('/api/contact', contactRoutes);
@@ -47,7 +51,7 @@ app.get('/api/health', (req, res) => {
 
 console.log(`[env] MAIL_USER: ${process.env.MAIL_USER ? 'set' : 'missing'}`);
 console.log(`[env] MAIL_APP_PASSWORD/MAIL_PASSWORD: ${(process.env.MAIL_APP_PASSWORD || process.env.MAIL_PASSWORD) ? 'set' : 'missing'}`);
-console.log(`[env] CLIENT_URLS: ${CLIENT_URLS.length > 0 ? CLIENT_URLS.join(', ') : 'not set (allow-all mode)'}`);
+console.log(`[env] CLIENT_URLS: ${CLIENT_URLS.length > 0 ? CLIENT_URLS.join(', ') : 'not set or placeholder (allow-all mode)'}`);
 
 // ❌ Stop server if Mongo URI missing
 if (!MONGO_URI) {
