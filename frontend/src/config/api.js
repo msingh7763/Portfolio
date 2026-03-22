@@ -1,8 +1,11 @@
 const rawApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim();
 const rawDevApiUrl = (import.meta.env.VITE_DEV_API_URL || '').trim();
-const productionFallbackApiUrl = 'https://portfolio-5tua.onrender.com';
+const resolvedApiBaseUrl = import.meta.env.DEV ? (rawDevApiUrl || rawApiBaseUrl) : rawApiBaseUrl;
 
-const resolvedApiBaseUrl = rawApiBaseUrl || (import.meta.env.DEV ? rawDevApiUrl : productionFallbackApiUrl);
+if (import.meta.env.PROD && !rawApiBaseUrl) {
+  // Surface deployment misconfiguration early instead of silently calling the frontend origin.
+  console.warn('Missing VITE_API_BASE_URL in production. Contact API requests may fail.');
+}
 
 export const API_BASE_URL = resolvedApiBaseUrl.replace(/\/$/, '');
 

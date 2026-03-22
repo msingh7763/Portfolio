@@ -5,9 +5,12 @@ import Contact from '../models/Contact.js';
 const router = express.Router();
 
 const CONTACT_RECEIVER_EMAIL = 'msingh7763@gmail.com';
+const getMailPassword = () => process.env.MAIL_APP_PASSWORD || process.env.MAIL_PASSWORD || '';
 
 const createTransporter = () => {
-  if (!process.env.MAIL_USER || !process.env.MAIL_APP_PASSWORD) {
+  const mailPassword = getMailPassword();
+
+  if (!process.env.MAIL_USER || !mailPassword) {
     return null;
   }
 
@@ -15,7 +18,7 @@ const createTransporter = () => {
     service: 'gmail',
     auth: {
       user: process.env.MAIL_USER,
-      pass: process.env.MAIL_APP_PASSWORD,
+      pass: mailPassword,
     },
   });
 };
@@ -36,9 +39,9 @@ router.post('/', async (req, res) => {
 
     const transporter = createTransporter();
     if (!transporter) {
-      console.error('❌ Mail service not configured. Missing MAIL_USER or MAIL_APP_PASSWORD');
+      console.error('❌ Mail service not configured. Missing MAIL_USER and/or MAIL_APP_PASSWORD (or MAIL_PASSWORD)');
       return res.status(500).json({
-        error: 'Mail service is not configured. Please set MAIL_USER and MAIL_APP_PASSWORD in environment variables.',
+        error: 'Mail service is not configured. Please set MAIL_USER and MAIL_APP_PASSWORD (or MAIL_PASSWORD) in environment variables.',
       });
     }
 

@@ -11,13 +11,24 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
+const CLIENT_URLS = (process.env.CLIENT_URLS || '')
+  .split(',')
+  .map((url) => url.trim())
+  .filter(Boolean);
 
 // ✅ Middleware
 app.use(express.json({ limit: '1mb' }));
 
-// ✅ CORS (simple + works with Vercel)
+// ✅ CORS (allow configured client origins; fallback to allow-all if not configured)
 app.use(cors({
-  origin: true, // allow all for now (safe for deployment testing)
+  origin: (origin, callback) => {
+    if (!origin || CLIENT_URLS.length === 0 || CLIENT_URLS.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
   credentials: true,
 }));
 
@@ -33,6 +44,10 @@ app.get('/', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
+
+console.log(`[env] MAIL_USER: ${process.env.MAIL_USER ? 'set' : 'missing'}`);
+console.log(`[env] MAIL_APP_PASSWORD/MAIL_PASSWORD: ${(process.env.MAIL_APP_PASSWORD || process.env.MAIL_PASSWORD) ? 'set' : 'missing'}`);
+console.log(`[env] CLIENT_URLS: ${CLIENT_URLS.length > 0 ? CLIENT_URLS.join(', ') : 'not set (allow-all mode)'}`);
 
 // ❌ Stop server if Mongo URI missing
 if (!MONGO_URI) {

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { FiMail, FiSend, FiUser } from 'react-icons/fi';
-import { buildApiUrl } from '../config/api';
+import { API_BASE_URL, buildApiUrl } from '../config/api';
 
 const CONTACT_ENDPOINT = buildApiUrl('/api/contact');
 
@@ -18,6 +18,11 @@ export default function Contact() {
 
     if (!form.name || !form.email || !form.message) {
       setStatus('Please fill all fields.');
+      return;
+    }
+
+    if (import.meta.env.PROD && !API_BASE_URL) {
+      setStatus('Failed to send message: missing VITE_API_BASE_URL in frontend environment settings.');
       return;
     }
 

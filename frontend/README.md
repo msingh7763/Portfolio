@@ -20,8 +20,8 @@ By default, local API calls use `/api/*` and Vite proxies them to `VITE_DEV_API_
 
 1. Import this `frontend` folder into Vercel.
 2. Keep framework preset as `Vite`.
-3. Add environment variable:
-   - `VITE_API_BASE_URL` = `https://portfolio-5tua.onrender.com`
+3. Add environment variable (required):
+   - `VITE_API_BASE_URL` = `https://your-backend-service.onrender.com`
 
 4. Deploy.
 
