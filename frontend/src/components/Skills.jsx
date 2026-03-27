@@ -215,7 +215,7 @@ export default function Skills() {
               key={`quick-${skill}`}
               className="relative inline-flex items-center gap-3 px-6 py-3 text-lg font-semibold tracking-wide text-orange-100 transition duration-300 border rounded-full group whitespace-nowrap border-orange-300/35 bg-slate-900/90 hover:-translate-y-1 hover:border-orange-200/70 hover:bg-slate-800"
             >
-              <span className="relative text-2xl text-orange-300">
+              <span className="relative flex items-center justify-center text-2xl text-orange-300" style={{ width: '1.5em', height: '1.5em' }}>
                 {iconMap[skill]}
               </span>
               {skill}
@@ -234,7 +234,7 @@ export default function Skills() {
             key={`mobile-${skill}`}
             className="p-4 text-center border shadow-lg rounded-2xl border-orange-300/30 bg-slate-900/85"
           >
-            <div className="mb-2 text-3xl text-orange-300">{iconMap[skill]}</div>
+            <div className="flex items-center justify-center mb-2 text-3xl text-orange-300" style={{ width: '3em', height: '3em', margin: '0 auto' }}>{iconMap[skill]}</div>
             <p className="text-sm font-semibold text-orange-100">{skill}</p>
             <p className="mt-1 text-xs font-semibold text-orange-200/90">{skillPercentMap[skill] ?? 80}%</p>
           </div>
@@ -288,7 +288,8 @@ export default function Skills() {
               {/* ICON */}
 
               <motion.div
-                className="relative text-6xl"
+                className="relative flex items-center justify-center text-6xl"
+                style={{ width: '1.5em', height: '1.5em' }}
                 animate={{ y: [0, -6, 0] }}
                 transition={{
                   duration: 3,
