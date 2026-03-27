@@ -31,6 +31,10 @@ export const skills = [
     category: "Tools",
     items: ["Git", "GitHub", "Postman"],
   },
+  {
+    category: "Soft Skills",
+    items: ["Time Management", "Leadership", "Communication", "Adaptability", "Quick Learner", "Problem Solving"],
+  },
 ];
 
 

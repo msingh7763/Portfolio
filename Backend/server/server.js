@@ -11,21 +11,42 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
+const CLIENT_URLS = (process.env.CLIENT_URLS || '')
+  .split(',')
+  .map((url) => url.trim())
+  .filter(Boolean);
 
 // ✅ Middleware
 app.use(express.json({ limit: '1mb' }));
 
-// ✅ CORS (FINAL FIX - production safe)
-const allowedOrigin = "https://portfolio-nine-ruby-69.vercel.app";
+// ✅ CORS (supports configured origins and Vercel preview/production domains)
+const isAllowedOrigin = (origin) => {
+  if (!origin) {
+    return true;
+  }
+
+  if (CLIENT_URLS.includes(origin)) {
+    return true;
+  }
+
+  return /\.vercel\.app$/i.test(origin);
+};
 
 app.use(cors({
-  origin: allowedOrigin,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  origin: (origin, callback) => {
+    if (isAllowedOrigin(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
 }));
 
-app.options("*", cors({
-  origin: allowedOrigin,
+app.options('*', cors({
+  origin: true,
   credentials: true,
 }));
 
@@ -46,6 +67,7 @@ app.get('/api/health', (req, res) => {
 console.log(`[env] MAIL_USER: ${process.env.MAIL_USER ? 'set' : 'missing'}`);
 console.log(`[env] MAIL_APP_PASSWORD/MAIL_PASSWORD: ${(process.env.MAIL_APP_PASSWORD || process.env.MAIL_PASSWORD) ? 'set' : 'missing'}`);
 console.log(`[env] MONGO_URI: ${MONGO_URI ? 'set' : 'missing'}`);
+console.log(`[env] CLIENT_URLS: ${CLIENT_URLS.length > 0 ? CLIENT_URLS.join(', ') : 'not set'}`);
 
 // ❌ Stop server if Mongo URI missing
 if (!MONGO_URI) {

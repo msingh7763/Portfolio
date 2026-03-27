@@ -14,7 +14,13 @@ import {
   FaCode,
   FaServer,
   FaDatabase,
-  FaTools
+  FaTools,
+  FaClock,
+  FaUsers,
+  FaComments,
+  FaRedo,
+  FaLightbulb,
+  FaBrain
 } from "react-icons/fa";
 
 import {
@@ -53,7 +59,13 @@ export default function Skills() {
     MySQL: <SiMysql />,
     Git: <FaGitAlt />,
     GitHub: <FaGithub />,
-    Postman: <SiPostman />
+    Postman: <SiPostman />,
+    "Time Management": <FaClock />,
+    Leadership: <FaUsers />,
+    Communication: <FaComments />,
+    Adaptability: <FaRedo />,
+    "Quick Learner": <FaLightbulb />,
+    "Problem Solving": <FaBrain />
   };
 
   /* CATEGORY ICONS */
@@ -63,7 +75,8 @@ export default function Skills() {
     Frontend: <FaReact />,
     Backend: <FaServer />,
     Database: <FaDatabase />,
-    Tools: <FaTools />
+    Tools: <FaTools />,
+    "Soft Skills": <FaBrain />
   };
 
   const activeSkills = useMemo(() => {
@@ -87,7 +100,13 @@ export default function Skills() {
     MySQL: 78,
     Git: 85,
     GitHub: 88,
-    Postman: 83
+    Postman: 83,
+    "Time Management": 85,
+    Leadership: 82,
+    Communication: 88,
+    Adaptability: 90,
+    "Quick Learner": 92,
+    "Problem Solving": 87
   };
 
   /* CENTER ROTATION */
@@ -108,11 +127,11 @@ export default function Skills() {
 
   return (
 
-    <section className="relative w-full min-h-screen overflow-hidden px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+    <section className="relative w-full min-h-screen px-4 overflow-hidden py-14 sm:px-6 sm:py-20 lg:px-8">
 
       {/* TITLE */}
 
-      <h2 className="mb-8 text-center text-3xl font-bold text-stone-100 sm:mb-10 sm:text-4xl">
+      <h2 className="mb-8 text-3xl font-bold text-center text-stone-100 sm:mb-10 sm:text-4xl">
         Skills
       </h2>
 
@@ -120,7 +139,7 @@ export default function Skills() {
       {/* CATEGORY BUTTONS */}
 
       <div
-        className="mt-8 flex flex-wrap justify-center gap-3 sm:gap-4 lg:gap-8"
+        className="flex flex-wrap justify-center gap-3 mt-8 sm:gap-4 lg:gap-8"
         style={{ perspective: "1000px" }}
       >
 
@@ -187,14 +206,14 @@ export default function Skills() {
 
       {/* QUICK VIEW (STRAIGHT LINE) */}
 
-      <div className="mt-10 hidden pb-3 md:block lg:mt-14">
+      <div className="hidden pb-3 mt-10 md:block lg:mt-14">
         <div className="mx-auto flex w-fit max-w-full items-center justify-center overflow-x-auto rounded-3xl border border-orange-300/35 bg-gradient-to-r from-slate-950/95 via-slate-900/90 to-slate-950/95 px-7 py-5 shadow-[0_0_34px_rgba(249,115,22,0.22)] backdrop-blur-md">
-          <div className="flex min-w-max items-center justify-center gap-5">
+          <div className="flex items-center justify-center gap-5 min-w-max">
           {activeSkills.items.map((skill) => (
             <button
               type="button"
               key={`quick-${skill}`}
-              className="group relative inline-flex items-center gap-3 whitespace-nowrap rounded-full border border-orange-300/35 bg-slate-900/90 px-6 py-3 text-lg font-semibold tracking-wide text-orange-100 transition duration-300 hover:-translate-y-1 hover:border-orange-200/70 hover:bg-slate-800"
+              className="relative inline-flex items-center gap-3 px-6 py-3 text-lg font-semibold tracking-wide text-orange-100 transition duration-300 border rounded-full group whitespace-nowrap border-orange-300/35 bg-slate-900/90 hover:-translate-y-1 hover:border-orange-200/70 hover:bg-slate-800"
             >
               <span className="relative text-2xl text-orange-300">
                 {iconMap[skill]}
@@ -209,11 +228,11 @@ export default function Skills() {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:mt-10 lg:hidden">
+      <div className="grid grid-cols-2 gap-3 mt-8 sm:grid-cols-3 md:mt-10 lg:hidden">
         {activeSkills.items.map((skill) => (
           <div
             key={`mobile-${skill}`}
-            className="rounded-2xl border border-orange-300/30 bg-slate-900/85 p-4 text-center shadow-lg"
+            className="p-4 text-center border shadow-lg rounded-2xl border-orange-300/30 bg-slate-900/85"
           >
             <div className="mb-2 text-3xl text-orange-300">{iconMap[skill]}</div>
             <p className="text-sm font-semibold text-orange-100">{skill}</p>
